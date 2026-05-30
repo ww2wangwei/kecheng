@@ -173,6 +173,9 @@ button{border:none;cursor:pointer;font-family:inherit;background:none}
   .page-main{padding:24px 16px}
   .college-grid{grid-template-columns:1fr}
   .search-wrap{padding:0 16px}
+  .modal-overlay{padding:12px}
+  .modal{max-width:100%;border-radius:12px}
+  .modal-body{padding:16px}
 }
 </style>
 </head>
@@ -434,7 +437,8 @@ async function openCourse(id){
 async function doSearch(q){
   if(!q.trim()) return nav('home');
   const all=await api('/courses');
-  const r=all.filter(c=>c.name.includes(q)||c.college_name.includes(q)||c.major_name.includes(q));
+  const lowerQ = q.toLowerCase();
+  const r=all.filter(c=>c.name.toLowerCase().includes(lowerQ)||c.college_name.toLowerCase().includes(lowerQ)||c.major_name.toLowerCase().includes(lowerQ));
   state.v='courses'; state.major={name:'搜索结果',course_count:r.length};
   render();
   const list=document.getElementById('cl');
