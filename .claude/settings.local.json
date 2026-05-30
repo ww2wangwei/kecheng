@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://www.hopesmartedu.com/_nuxt/entry.h5S78eHZ.css\")",
+      "Bash(ssh *)",
+      "Bash(scp -i ~/.ssh/fangan \"F:\\\\claude code\\\\prj01\\\\course-platform\\\\api\\\\colleges.php\" root@111.228.0.87:/var/www/course-platform/api/colleges.php)",
+      "Bash(scp -i ~/.ssh/fangan \"F:\\\\claude code\\\\prj01\\\\course-platform\\\\api\\\\majors.php\" root@111.228.0.87:/var/www/course-platform/api/majors.php)",
+      "Bash(scp -i ~/.ssh/fangan \"F:\\\\claude code\\\\prj01\\\\course-platform\\\\api\\\\courses.php\" root@111.228.0.87:/var/www/course-platform/api/courses.php)",
+      "Bash(curl -s http://111.228.0.87/api/admin_colleges)",
+      "Bash(curl *)",
+      "Bash(python server.py)"
+    ]
+  }
+}

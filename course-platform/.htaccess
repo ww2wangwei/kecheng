@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# API 请求转发到 api 目录
+RewriteRule ^api/(.*)$ api/$1 [L]
+
+# 如果文件或目录存在，直接访问
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# 其余请求路由到 index.php（前台）
+RewriteRule ^(admin/.*)$ $1 [L]
+RewriteRule ^(api/.*)$ $1 [L]
+RewriteRule . index.php [L]

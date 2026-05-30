@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产业学院课程资源平台</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1e40af;--blue-mid:#2563eb;--blue-light:#3b82f6;
+  --teal:#0f766e;--green:#15803d;
+  --bg:#f1f5f9;--surface:#ffffff;--surface-2:#f8fafc;
+  --text:#1e293b;--text-2:#475569;--muted:#94a3b8;
+  --border:#e2e8f0;--border-2:#cbd5e1;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 8px 30px rgba(0,0,0,.12);
+  --r:10px;--r-md:14px;--r-lg:20px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC',sans-serif;background:#e8f0fe;color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(37,99,235,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(30,64,175,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+.page-wrapper{position:relative;z-index:1}
+a{text-decoration:none;color:inherit}
+button{border:none;cursor:pointer;font-family:inherit;background:none}
+
+/* ===== HEADER ===== */
+.site-header{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:2px solid var(--blue);box-shadow:var(--shadow)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:32px}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-icon{width:38px;height:38px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff}
+.brand-name{font-size:17px;font-weight:700;color:var(--text)}
+.brand-name span{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:1px}
+.header-nav{display:flex;gap:2px;flex:1}
+.header-nav a{padding:7px 16px;border-radius:6px;font-size:14px;font-weight:500;color:var(--text-2);transition:all .15s}
+.header-nav a:hover{color:var(--blue);background:#eff6ff}
+.header-nav a.active{color:var(--blue);background:#eff6ff;font-weight:600}
+.header-extra{display:flex;align-items:center;gap:10px;margin-left:auto}
+.btn{font-size:13px;font-weight:600;padding:7px 16px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-2);transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{border-color:var(--blue-mid);color:var(--blue-mid);background:#eff6ff}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover{background:#1e3a8a}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(135deg,#1e40af 0%,#2563eb 50%,#3b82f6 100%);border-bottom:1px solid var(--border);padding:52px 28px 48px}
+.hero-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:40px}
+.hero-text{flex:1}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;color:#fff;margin-bottom:16px}
+.hero h1{font-size:30px;font-weight:700;color:#fff;margin-bottom:10px;line-height:1.3}
+.hero h1 em{font-style:normal;color:#bfdbfe}
+.hero-desc{font-size:15px;color:rgba(255,255,255,.85);margin-bottom:24px;max-width:520px}
+.hero-stats{display:flex;gap:32px}
+.hero-stat{display:flex;flex-direction:column;gap:2px}
+.hero-stat .num{font-size:26px;font-weight:700;color:#fff;line-height:1}
+.hero-stat .label{font-size:12px;color:rgba(255,255,255,.7)}
+.hero-visual{width:200px;height:160px;background:rgba(255,255,255,.15);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.25)}
+.hero-visual::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Ccircle cx='20' cy='20' r='1.5'/%3E%3C/g%3E%3C/svg%3E")}
+.hero-visual i{font-size:64px;color:rgba(255,255,255,.9);position:relative}
+
+/* ===== SEARCH ===== */
+.search-wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+.search-bar{display:flex;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;margin:-20px auto 0;max-width:560px;box-shadow:var(--shadow-md)}
+.search-bar input{flex:1;padding:13px 16px;font-size:14px;border:none;outline:none;background:transparent}
+.search-bar button{flex-shrink:0;background:var(--blue);color:#fff;border:none;padding:13px 20px;font-size:13px;font-weight:600;transition:background .15s}
+.search-bar button:hover{background:#1e3a8a}
+
+/* ===== MAIN ===== */
+.page-main{max-width:1200px;margin:0 auto;padding:36px 28px 60px}
+.page-section{margin-bottom:40px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.section-title{font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:18px;background:var(--blue-mid);border-radius:2px}
+.section-link{font-size:13px;color:var(--blue-mid);display:flex;align-items:center;gap:4px;transition:gap .15s}
+.section-link:hover{gap:8px}
+.section-link i{font-size:11px}
+
+/* ===== COLLEGE CARDS ===== */
+.college-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.college-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:20px;transition:all .2s;cursor:pointer}
+.college-card:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.college-card .c-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.college-icon{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.college-icon.b1{background:#dbeafe;color:#2563eb}
+.college-icon.b2{background:#f5f3ff;color:#7c3aed}
+.college-icon.b3{background:#ecfdf5;color:#15803d}
+.college-icon.b4{background:#fff7ed;color:#c2410c}
+.college-icon.b5{background:#ecfeff;color:#0891b2}
+.college-icon.b6{background:#fdf2f8;color:#be185d}
+.college-icon.b7{background:#fef9c3;color:#a16207}
+.college-icon.b8{background:#f0fdfa;color:#0f766e}
+.college-icon.b9{background:#fef2f2;color:#b91c1c}
+.college-card h3{font-size:15px;font-weight:700;margin-bottom:4px;line-height:1.3}
+.college-card .c-sub{font-size:12px;color:var(--muted);line-height:1.4}
+.college-card .c-footer{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.college-card .c-tag{font-size:12px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--bg);color:var(--text-2)}
+.college-card .c-tag strong{color:var(--blue-mid)}
+.college-card .c-arrow{margin-left:auto;color:var(--muted);font-size:14px;transition:all .15s}
+.college-card:hover .c-arrow{color:var(--blue-mid);transform:translateX(3px)}
+
+/* ===== MAJOR CARDS ===== */
+.major-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.major-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:12px;transition:all .15s;cursor:pointer}
+.major-card:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-md)}
+.major-card:hover .m-arrow{color:var(--blue-mid);transform:translateX(3px)}
+.m-icon{width:36px;height:36px;border-radius:6px;background:#eff6ff;display:flex;align-items:center;justify-content:center;color:var(--blue-mid);flex-shrink:0}
+.m-info{flex:1;min-width:0}
+.m-info h4{font-size:14px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-info .m-count{font-size:12px;color:var(--muted)}
+.m-arrow{color:var(--muted);font-size:14px;transition:all .15s}
+
+/* ===== COURSE LIST ===== */
+.course-list{display:flex;flex-direction:column;gap:8px}
+.course-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 18px;display:flex;align-items:center;gap:14px;transition:all .15s;cursor:pointer}
+.course-item:hover{border-color:var(--blue-mid);box-shadow:var(--shadow);transform:translateX(4px)}
+.c-num{width:34px;height:34px;border-radius:6px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--blue-mid);flex-shrink:0;border:1px solid #bfdbfe}
+.c-info{flex:1;min-width:0}
+.c-info h4{font-size:14px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-meta{font-size:12px;color:var(--muted);display:flex;gap:8px}
+.c-arrow{color:var(--muted);font-size:14px;transition:all .15s;margin-left:auto}
+.course-item:hover .c-arrow{color:var(--blue-mid);transform:translateX(3px)}
+
+/* ===== LIST HEADER ===== */
+.list-header{margin-bottom:20px}
+.list-header .back-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;font-weight:600;color:var(--text-2);background:var(--surface);transition:all .15s;margin-bottom:12px}
+.list-header .back-btn:hover{border-color:var(--blue-mid);color:var(--blue-mid);background:#eff6ff}
+.list-header h2{font-size:20px;font-weight:700}
+.list-header .sub{font-size:13px;color:var(--muted);margin-top:3px}
+.breadcrumb{font-size:13px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.breadcrumb a{color:var(--muted);transition:color .15s}
+.breadcrumb a:hover{color:var(--blue-mid)}
+.breadcrumb span{color:var(--blue-mid);font-weight:600}
+.breadcrumb i{font-size:10px}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px;backdrop-filter:blur(2px)}
+.modal{background:var(--surface);border-radius:var(--r-lg);width:100%;max-width:480px;box-shadow:var(--shadow-lg);animation:slideUp .2s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.modal-header{padding:22px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-header h2{font-size:18px;font-weight:700;line-height:1.35;flex:1}
+.modal-close{width:32px;height:32px;border-radius:6px;background:var(--bg);border:none;font-size:16px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.modal-close:hover{background:var(--border-2);color:var(--text)}
+.modal-body{padding:20px 24px 24px}
+.c-img{width:100%;height:160px;border-radius:var(--r);overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#dbeafe,#f5f3ff);display:flex;align-items:center;justify-content:center}
+.c-img img{width:100%;height:100%;object-fit:cover}
+.c-img .placeholder{font-size:40px;color:rgba(37,99,235,.2)}
+.c-tags{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.c-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:4px;background:var(--bg);color:var(--text-2)}
+.c-tag.blue{background:#dbeafe;color:var(--blue-mid)}
+.c-desc{font-size:13px;color:var(--text-2);line-height:1.7;padding:12px 14px;background:var(--surface-2);border-radius:var(--r);margin-bottom:16px;border:1px solid var(--border)}
+.links{display:flex;flex-direction:column;gap:8px}
+.link-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:var(--r);font-size:14px;font-weight:600;transition:all .15s;border:none}
+.link-btn.online{background:var(--blue);color:#fff}
+.link-btn.online:hover{background:#1e3a8a}
+.link-btn.offline{background:var(--surface);border:2px solid var(--blue);color:var(--blue)}
+.link-btn.offline:hover{background:#eff6ff}
+.no-links{text-align:center;padding:20px;color:var(--muted);font-size:13px;background:var(--surface-2);border-radius:var(--r);border:1px solid var(--border)}
+
+/* ===== FOOTER ===== */
+.site-footer{background:var(--surface);border-top:1px solid var(--border);padding:24px 28px;text-align:center;font-size:13px;color:var(--muted)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .hero{flex-direction:column}
+  .hero-visual{width:100%;height:120px}
+  .hero-stats{gap:20px}
+}
+@media(max-width:640px){
+  .header-inner{padding:0 16px;gap:12px}
+  .header-nav{display:none}
+  .hero{padding:32px 16px}
+  .hero h1{font-size:22px}
+  .page-main{padding:24px 16px}
+  .college-grid{grid-template-columns:1fr}
+  .search-wrap{padding:0 16px}
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header">
+<div class="header-inner">
+  <div class="brand">
+    <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+    <div class="brand-name">课程资源平台<span>产业学院</span></div>
+  </div>
+  <nav class="header-nav">
+    <a href="#" onclick="nav('home')" class="active" id="nav-home"><i class="fa-solid fa-home"></i> 首页</a>
+    <a href="#" onclick="nav('colleges')" id="nav-colleges"><i class="fa-solid fa-building-columns"></i> 全部学院</a>
+  </nav>
+  <div class="header-extra">
+    <a href="/admin/" class="btn"><i class="fa-solid fa-gear"></i> 管理后台</a>
+  </div>
+</div>
+</header>
+
+<main id="app"></main>
+
+<footer class="site-footer">
+  产业学院课程资源平台 &nbsp;|&nbsp; <a href="/admin/" style="color:var(--blue-mid)">管理后台</a>
+</footer>
+
+<script>
+const API = '/api';
+const ICONS = ['fa-solid fa-laptop','fa-solid fa-robot','fa-solid fa-shield','fa-solid fa-chart-line','fa-solid fa-plane','fa-solid fa-gears','fa-solid fa-bolt','fa-solid fa-masks-theater','fa-solid fa-heart'];
+const ICON_CLS = ['b1','b2','b3','b4','b5','b6','b7','b8','b9'];
+let state = { v:'home', colleges:[], college:null, major:null, majorId:null, collegeId:null };
+
+function e(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+async function api(url){ const r=await fetch(API+url); if(!r.ok) throw new Error(r.statusText); return r.json(); }
+
+function render(){
+  const app = document.getElementById('app');
+  if(state.v==='home') app.innerHTML=tplHome();
+  else if(state.v==='colleges') app.innerHTML=tplColleges();
+  else if(state.v==='majors') app.innerHTML=tplMajors();
+  else if(state.v==='courses') app.innerHTML=tplCourses();
+}
+
+function nav(v){ state.v=v; render();
+  if(v==='home') loadHome();
+  else if(v==='colleges') loadColleges();
+  else if(v==='majors') loadMajors();
+  document.getElementById('nav-home').className=v==='home'?'active':'';
+  document.getElementById('nav-colleges').className=v==='colleges'?'active':'';
+}
+
+// ===== TEMPLATES =====
+
+function tplHome(){
+  return `<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge"><i class="fa-solid fa-star"></i> 数字化教育平台</div>
+      <h1>欢迎访问<em>产业学院</em>课程资源平台</h1>
+      <p class="hero-desc">覆盖9大产业学院，精选48门专业课程，线上线下同步开放，助力学生高效学习与教师教学。</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">9</div><div class="label">产业学院</div></div>
+        <div class="hero-stat"><div class="num">9</div><div class="label">专业方向</div></div>
+        <div class="hero-stat"><div class="num">48</div><div class="label">精品课程</div></div>
+      </div>
+    </div>
+    <div class="hero-visual"><i class="fa-solid fa-graduation-cap"></i></div>
+  </div>
+</section>
+<div class="search-wrap">
+  <div class="search-bar">
+    <input type="text" placeholder="搜索课程、学院或专业方向..." oninput="onSearch(this.value)" onkeydown="if(event.key==='Enter')doSearch(this.value)">
+    <button onclick="doSearch(document.querySelector('.search-bar input').value)"><i class="fa-solid fa-search"></i> 搜索</button>
+  </div>
+</div>
+<div class="page-main">
+  <div class="page-section">
+    <div class="section-head">
+      <div class="section-title">产业学院</div>
+      <a class="section-link" href="#" onclick="nav('colleges');return false">查看全部 <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="college-grid" id="cg"></div>
+  </div>
+</div>`;
+}
+
+function tplColleges(){
+  return `<div class="page-main fade-in">
+  <div class="page-section">
+    <div class="section-head"><div class="section-title">全部产业学院</div></div>
+    <div class="college-grid" id="cg"></div>
+  </div>
+</div>`;
+}
+
+function tplMajors(){
+  return `<div class="page-main fade-in">
+  <div class="list-header">
+    <button class="back-btn" onclick="nav('colleges')"><i class="fa-solid fa-arrow-left"></i> 返回学院</button>
+    <div class="breadcrumb">
+      <a href="#" onclick="nav('home');return false">首页</a>
+      <i class="fa-solid fa-chevron-right"></i>
+      <span>${e(state.college?.name||'')}</span>
+    </div>
+    <h2>${e(state.college?.name||'')}</h2>
+    <p class="sub">${state.college?.major_count||0} 个专业方向 · ${state.college?.course_count||0} 门课程</p>
+  </div>
+  <div class="major-grid" id="mg"></div>
+</div>`;
+}
+
+function tplCourses(){
+  return `<div class="page-main fade-in">
+  <div class="list-header">
+    <button class="back-btn" onclick="goMajors()"><i class="fa-solid fa-arrow-left"></i> 返回专业</button>
+    <div class="breadcrumb">
+      <a href="#" onclick="nav('home');return false">首页</a>
+      <i class="fa-solid fa-chevron-right"></i>
+      <a href="#" onclick="nav('colleges');return false">${e(state.college?.name||'')}</a>
+      <i class="fa-solid fa-chevron-right"></i>
+      <span>${e(state.major?.name||'')}</span>
+    </div>
+    <h2>${e(state.major?.name||'')}</h2>
+    <p class="sub">${state.major?.course_count||0} 门课程</p>
+  </div>
+  <div class="course-list" id="cl"></div>
+</div>`;
+}
+
+// ===== LOADERS =====
+
+async function loadHome(){
+  const colleges = await api('/colleges');
+  state.colleges = colleges;
+  const grid = document.getElementById('cg');
+  if(grid) grid.innerHTML = colleges.map((c,i)=>`
+    <div class="college-card" onclick="goMajors(${c.id})">
+      <div class="c-top">
+        <div class="college-icon ${ICON_CLS[i%9]}"><i class="${ICONS[i%9]}"></i></div>
+        <div>
+          <h3>${e(c.name)}</h3>
+          <p class="c-sub">专业方向课程资源</p>
+        </div>
+      </div>
+      <div class="c-footer">
+        <span class="c-tag"><strong>${c.major_count}</strong> 个专业</span>
+        <span class="c-tag"><strong>${c.course_count}</strong> 门课程</span>
+        <div class="c-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadColleges(){
+  const colleges = await api('/colleges');
+  state.colleges = colleges;
+  const grid = document.getElementById('cg');
+  if(grid) grid.innerHTML = colleges.map((c,i)=>`
+    <div class="college-card" onclick="goMajors(${c.id})">
+      <div class="c-top">
+        <div class="college-icon ${ICON_CLS[i%9]}"><i class="${ICONS[i%9]}"></i></div>
+        <div>
+          <h3>${e(c.name)}</h3>
+          <p class="c-sub">专业方向课程资源</p>
+        </div>
+      </div>
+      <div class="c-footer">
+        <span class="c-tag"><strong>${c.major_count}</strong> 个专业</span>
+        <span class="c-tag"><strong>${c.course_count}</strong> 门课程</span>
+        <div class="c-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadMajors(){
+  if(!state.collegeId) return;
+  const majors=await api('/majors?college_id='+state.collegeId);
+  state.majorList=majors;
+  const grid=document.getElementById('mg');
+  if(grid) grid.innerHTML=majors.map((m,i)=>`
+    <div class="major-card" onclick="goCourses(${state.collegeId},${m.id},'${encodeURIComponent(m.name)}')">
+      <div class="m-icon"><i class="fa-solid fa-list-check"></i></div>
+      <div class="m-info"><h4>${e(m.name)}</h4><div class="m-count">${m.course_count} 门课程</div></div>
+      <div class="m-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+    </div>`).join('');
+}
+
+async function goMajors(id){
+  state.v='majors';
+  state.collegeId=id;
+  state.college=state.colleges.find(c=>c.id==id)||{name:'',major_count:0,course_count:0};
+  state.majorId=null; state.major=null;
+  render();
+  await loadMajors();
+}
+
+async function goCourses(collegeId,majorId,majorName){
+  state.v='courses';
+  state.collegeId=collegeId; state.majorId=majorId;
+  state.major={name:decodeURIComponent(majorName),course_count:0};
+  render();
+  const all=await api('/courses');
+  const targetCollege=state.colleges.find(c=>c.id==collegeId)?.name;
+  const targetMajor=decodeURIComponent(majorName);
+  const filtered=all.filter(c=>c.college_name===targetCollege&&c.major_name===targetMajor);
+  state.major.course_count=filtered.length;
+  const list=document.getElementById('cl');
+  if(list){
+    if(!filtered.length){
+      list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">暂无课程</div>'; return;
+    }
+    list.innerHTML=filtered.map((c,i)=>`
+      <div class="course-item" onclick="openCourse(${c.id})">
+        <div class="c-num">${i+1}</div>
+        <div class="c-info">
+          <h4>${e(c.name)}</h4>
+          <div class="c-meta"><span><i class="fa-solid fa-building-columns"></i> ${e(c.college_name||'')}</span></div>
+        </div>
+        <div class="c-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      </div>`).join('');
+  }
+}
+
+async function openCourse(id){
+  const all=await api('/courses');
+  const c=all.find(x=>x.id==id);
+  if(!c) return;
+  const img=c.image_url
+    ? `<img src="${e(c.image_url)}" alt="${e(c.name)}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fa-solid fa-book\\'></i></div>'">`
+    : `<div class="placeholder"><i class="fa-solid fa-book"></i></div>`;
+  const links=(c.online_url||c.offline_url)
+    ? `<div class="links">
+        ${c.online_url?`<a class="link-btn online" href="${e(c.online_url)}" target="_blank"><i class="fa-solid fa-globe"></i> 线上课程</a>`:''}
+        ${c.offline_url?`<a class="link-btn offline" href="${e(c.offline_url)}" target="_blank"><i class="fa-solid fa-school"></i> 线下课程</a>`:''}
+       </div>`
+    : `<div class="no-links">暂无课程地址，请联系管理员添加</div>`;
+  const modal=document.createElement('div');
+  modal.className='modal-overlay';
+  modal.innerHTML=`<div class="modal">
+    <div class="modal-header">
+      <h2>${e(c.name)}</h2>
+      <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="c-img">${img}</div>
+      <div class="c-tags">
+        <span class="c-tag blue"><i class="fa-solid fa-building-columns"></i> ${e(c.college_name||'')}</span>
+        <span class="c-tag"><i class="fa-solid fa-list-check"></i> ${e(c.major_name||'')}</span>
+      </div>
+      ${c.description?`<div class="c-desc">${e(c.description)}</div>`:''}
+      ${links}
+    </div>
+  </div>`;
+  modal.addEventListener('click',ev=>{ if(ev.target===modal)modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+async function doSearch(q){
+  if(!q.trim()) return nav('home');
+  const all=await api('/courses');
+  const r=all.filter(c=>c.name.includes(q)||c.college_name.includes(q)||c.major_name.includes(q));
+  state.v='courses'; state.major={name:'搜索结果',course_count:r.length};
+  render();
+  const list=document.getElementById('cl');
+  if(list){
+    if(!r.length){ list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">未找到相关课程</div>'; return; }
+    list.innerHTML=r.map((c,i)=>`
+      <div class="course-item" onclick="openCourse(${c.id})">
+        <div class="c-num">${i+1}</div>
+        <div class="c-info"><h4>${e(c.name)}</h4><div class="c-meta"><span>${e(c.college_name||'')} · ${e(c.major_name||'')}</span></div></div>
+        <div class="c-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      </div>`).join('');
+  }
+}
+
+function onSearch(q){ if(!q.trim()) nav('home'); }
+function goMajors(){ nav('majors'); }
+
+document.getElementById('nav-home').addEventListener('click',ev=>{ev.preventDefault();nav('home')});
+document.getElementById('nav-colleges').addEventListener('click',ev=>{ev.preventDefault();nav('colleges')});
+nav('home');
+</script>
+</div>
+</body>
+</html>
