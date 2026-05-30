@@ -645,8 +645,11 @@ function openAddCourseEmbedded(majorId){
     </select>
     <label>课程名称 <span style="color:var(--danger)">*</span></label>
     <input id="m-name" placeholder="例如：Java基础">
-    <label>课程图片URL</label>
-    <input id="m-img" placeholder="https://...">
+    <label>课程图片</label>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input id="m-img" placeholder="上传或输入图片URL" style="flex:1">
+      <button type="button" class="btn btn-outline btn-sm" onclick="uploadImage()"><i class="fa-solid fa-upload"></i> 上传</button>
+    </div>
     <label>课程简介</label>
     <textarea id="m-desc" placeholder="简要描述课程内容..."></textarea>
     <label>线上课程地址</label>
@@ -688,8 +691,11 @@ function openEditCourseEmbedded(courseId){
   <div class="modal-body">
     <label>课程名称</label>
     <input id="m-name" value="${escHtml(course.name)}" readonly style="background:#f1f5f9">
-    <label>课程图片URL</label>
-    <input id="m-img" value="${escHtml(course.image_url||'')}" placeholder="https://...">
+    <label>课程图片</label>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input id="m-img" value="${escHtml(course.image_url||'')}" placeholder="上传或输入图片URL" style="flex:1">
+      <button type="button" class="btn btn-outline btn-sm" onclick="uploadImage()"><i class="fa-solid fa-upload"></i> 上传</button>
+    </div>
     <label>课程简介</label>
     <textarea id="m-desc">${escHtml(course.description||'')}</textarea>
     <label>线上课程地址</label>
@@ -770,8 +776,11 @@ function openAdd(){
     </select>
     <label>专业方向</label>
     <select id="m-major"><option value="0">请先选择学院</option></select>
-    <label>课程图片URL</label>
-    <input id="m-img" placeholder="https://...">
+    <label>课程图片</label>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input id="m-img" placeholder="上传或输入图片URL" style="flex:1">
+      <button type="button" class="btn btn-outline btn-sm" onclick="uploadImage()"><i class="fa-solid fa-upload"></i> 上传</button>
+    </div>
     <label>课程简介</label>
     <textarea id="m-desc" placeholder="简要描述课程内容..."></textarea>
     <label>线上课程地址</label>
@@ -820,8 +829,11 @@ function openEditCourse(id){
   <div class="modal-body">
     <label>课程名称</label>
     <input id="m-name" value="${escHtml(c.name)}" readonly style="background:#f1f5f9">
-    <label>课程图片URL</label>
-    <input id="m-img" value="${escHtml(c.image_url||'')}" placeholder="https://...">
+    <label>课程图片</label>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input id="m-img" value="${escHtml(c.image_url||'')}" placeholder="上传或输入图片URL" style="flex:1">
+      <button type="button" class="btn btn-outline btn-sm" onclick="uploadImage()"><i class="fa-solid fa-upload"></i> 上传</button>
+    </div>
     <label>课程简介</label>
     <textarea id="m-desc" placeholder="简要描述课程内容...">${escHtml(c.description||'')}</textarea>
     <label>线上课程地址</label>
@@ -845,6 +857,29 @@ async function submitEditCourse(id){
     });
     toast('课程更新成功'); closeModal(); await loadData();
   } catch(e){ toast(e.message, 'error'); }
+}
+
+async function uploadImage(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('/api/upload', {method: 'POST', body: formData});
+      const data = await res.json();
+      if(data.url) {
+        document.getElementById('m-img').value = data.url;
+        toast('上传成功');
+      } else {
+        toast(data.error||'上传失败', 'error');
+      }
+    } catch(e){ toast('上传失败', 'error'); }
+  };
+  input.click();
 }
 
 async function deleteCourse(id){

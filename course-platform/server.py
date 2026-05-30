@@ -434,6 +434,29 @@ def admin_delete_course(course_id):
 def api_course_update():
     return jsonify({'status': 'success'})
 
+@app.route('/api/upload', methods=['POST'])
+def api_upload():
+    if 'file' not in request.files:
+        return jsonify({'error': '没有文件'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': '没有选择文件'}), 400
+    import os
+    upload_dir = os.path.join(os.path.dirname(__file__), 'uploads')
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    # 生成唯一文件名
+    import uuid
+    ext = os.path.splitext(file.filename)[1]
+    filename = f"{uuid.uuid4().hex}{ext}"
+    filepath = os.path.join(upload_dir, filename)
+    file.save(filepath)
+    return jsonify({'url': f'/uploads/{filename}'})
+
+@app.route('/uploads/<path:filename>')
+def serve_uploads(filename):
+    return send_from_directory('uploads', filename)
+
 # ========== 静态文件 ==========
 
 @app.route('/')
