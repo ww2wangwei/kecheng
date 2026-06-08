@@ -152,8 +152,6 @@ let token = sessionStorage.getItem('admin_token') || '';
 let username = sessionStorage.getItem('admin_username') || '';
 let state = {
   tab: 'courses',
-  collegeFilter: 0,
-  majorFilter: 0,
   colleges: [],
   majors: [],
   courses: [],
@@ -236,7 +234,7 @@ function tplAdmin(){
 }
 
 function switchTab(tab){
-  state.tab = tab; state.collegeFilter = 0; state.majorFilter = 0;
+  state.tab = tab;
   render(); loadData();
 }
 
@@ -262,7 +260,7 @@ async function loadData(){
     state.colleges = colleges;
     state.majors = majors;
     state.courses = courses;
-    state.total = courses.length;
+    state.total = new Set(courses.map(c=>c.name)).size;
     render();
     document.getElementById('badge-courses').textContent = state.total;
     document.getElementById('badge-majors').textContent = state.majors.length;
@@ -327,36 +325,35 @@ function renderMajors(content){
 }
 
 function renderCourses(content){
-  const collegeFilter = `<select id="f-college" onchange="onCollegeFilter()">
-    <option value="0">全部学院</option>
-    ${state.colleges.map(c=>`<option value="${c.id}" ${state.collegeFilter==c.id?'selected':''}>${escHtml(c.name)}</option>`).join('')}
-  </select>`;
-  const majorFilter = `<select id="f-major" onchange="onMajorFilter()">
-    <option value="0">全部专业</option>
-    ${state.majors.map(m=>`<option value="${m.id}" ${state.majorFilter==m.id?'selected':''}>${escHtml(m.name)}</option>`).join('')}
-  </select>`;
+  // Count unique courses
+  const seen = new Set();
+  state.courses.forEach(c=>seen.add(c.name));
+  const uniqueCount = seen.size;
   content.innerHTML=`
   <div class="filter-bar">
-    ${collegeFilter}
-    ${majorFilter}
-    <input type="text" id="f-search" placeholder="搜索课程名..." style="flex:1;max-width:200px">
+    <input type="text" id="f-search" placeholder="搜索课程名..." style="flex:1;max-width:300px">
     <button class="btn btn-outline btn-sm" onclick="doSearch()"><i class="fa-solid fa-search"></i> 搜索</button>
-    <div class="count">共 <b>${state.total}</b> 门课程</div>
+    <div class="count">共 <b>${uniqueCount}</b> 门课程</div>
   </div>
   <div class="data-table"><table>
-    <thead><tr><th><i class="fa-solid fa-hashtag"></i> ID</th><th>课程名称</th><th>学院</th><th>专业</th><th><i class="fa-solid fa-globe"></i> 线上</th><th><i class="fa-solid fa-school"></i> 线下</th><th><i class="fa-solid fa-wrench"></i> 操作</th></tr></thead>
+    <thead><tr><th><i class="fa-solid fa-hashtag"></i> ID</th><th>课程名称</th><th><i class="fa-solid fa-globe"></i> 线上</th><th><i class="fa-solid fa-school"></i> 线下</th><th><i class="fa-solid fa-wrench"></i> 操作</th></tr></thead>
     <tbody id="course-tbody"></tbody>
   </table></div>`;
   renderCourseTable(state.courses);
 }
 
 function renderCourseTable(courses){
-  document.getElementById('course-tbody').innerHTML = courses.map(c=>`
+  // Remove duplicates by course name
+  const seen = new Set();
+  const unique = courses.filter(c=>{
+    if(seen.has(c.name)) return false;
+    seen.add(c.name);
+    return true;
+  });
+  document.getElementById('course-tbody').innerHTML = unique.map((c,i)=>`
     <tr>
-      <td><b>${c.id}</b></td>
+      <td><b>${i+1}</b></td>
       <td class="cell-name"><div class="name">${escHtml(c.name)}</div></td>
-      <td><span style="font-size:12px;color:var(--text-secondary)">${escHtml(c.college_name||'')}</span></td>
-      <td><span style="font-size:12px;color:var(--text-muted)">${escHtml(c.major_name||'')}</span></td>
       <td class="cell-url">${c.online_url ? `<a href="${escHtml(c.online_url)}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : '<span class="empty"><i class="fa-solid fa-minus"></i></span>'}</td>
       <td class="cell-url">${c.offline_url ? `<a href="${escHtml(c.offline_url)}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : '<span class="empty"><i class="fa-solid fa-minus"></i></span>'}</td>
       <td class="actions">
@@ -364,28 +361,21 @@ function renderCourseTable(courses){
         <button class="btn btn-danger-outline btn-sm" onclick="deleteCourse(${c.id})"><i class="fa-solid fa-trash"></i></button>
       </td>
     </tr>`).join('');
+  document.querySelector('.count').innerHTML = `共 <b>${unique.length}</b> 门课程`;
 }
 
-function onCollegeFilter(){
-  state.collegeFilter = parseInt(document.getElementById('f-college')?.value||0);
-  state.majorFilter = parseInt(document.getElementById('f-major')?.value||0);
-  filterCourses();
-}
-function onMajorFilter(){
-  state.collegeFilter = parseInt(document.getElementById('f-college')?.value||0);
-  state.majorFilter = parseInt(document.getElementById('f-major')?.value||0);
-  filterCourses();
-}
-function filterCourses(){
-  let f = state.courses;
-  if(state.collegeFilter>0) f=f.filter(c=>c.college_id==state.collegeFilter);
-  if(state.majorFilter>0) f=f.filter(c=>c.major_id==state.majorFilter);
-  renderCourseTable(f);
-}
 function doSearch(){
   const q = document.getElementById('f-search')?.value.trim().toLowerCase();
   if(!q) return renderCourseTable(state.courses);
-  renderCourseTable(state.courses.filter(c=>c.name.toLowerCase().includes(q)));
+  // Filter then deduplicate
+  const seen = new Set();
+  const filtered = state.courses.filter(c=>c.name.toLowerCase().includes(q));
+  const unique = filtered.filter(c=>{
+    if(seen.has(c.name)) return false;
+    seen.add(c.name);
+    return true;
+  });
+  renderCourseTable(unique);
 }
 
 // ===== MODAL =====
