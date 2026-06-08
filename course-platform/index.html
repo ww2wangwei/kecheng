@@ -208,7 +208,7 @@ button{border:none;cursor:pointer;font-family:inherit;background:none}
 const API = '/api';
 const ICONS = ['fa-solid fa-laptop','fa-solid fa-robot','fa-solid fa-shield','fa-solid fa-chart-line','fa-solid fa-plane','fa-solid fa-gears','fa-solid fa-bolt','fa-solid fa-masks-theater','fa-solid fa-heart'];
 const ICON_CLS = ['b1','b2','b3','b4','b5','b6','b7','b8','b9'];
-let state = { v:'home', colleges:[], college:null, major:null, majorId:null, collegeId:null };
+let state = { v:'home', colleges:[], college:null, major:null, majorId:null, collegeId:null, totalColleges:0, totalMajors:0, totalCourses:0 };
 
 function e(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 async function api(url){ const r=await fetch(API+url); if(!r.ok) throw new Error(r.statusText); return r.json(); }
@@ -238,10 +238,10 @@ function tplHome(){
       <div class="hero-badge"><i class="fa-solid fa-star"></i> 数字化教育平台</div>
       <h1>欢迎访问<em>产业学院</em>课程资源平台</h1>
       <p class="hero-desc">覆盖9大产业学院，精选48门专业课程，线上线下同步开放，助力学生高效学习与教师教学。</p>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="num">9</div><div class="label">产业学院</div></div>
-        <div class="hero-stat"><div class="num">9</div><div class="label">专业方向</div></div>
-        <div class="hero-stat"><div class="num">48</div><div class="label">精品课程</div></div>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat"><div class="num">${state.totalColleges||0}</div><div class="label">产业学院</div></div>
+        <div class="hero-stat"><div class="num">${state.totalMajors||0}</div><div class="label">专业方向</div></div>
+        <div class="hero-stat"><div class="num">${state.totalCourses||0}</div><div class="label">精品课程</div></div>
       </div>
     </div>
     <div class="hero-visual"><i class="fa-solid fa-graduation-cap"></i></div>
@@ -312,6 +312,9 @@ function tplCourses(){
 async function loadHome(){
   const colleges = await api('/colleges');
   state.colleges = colleges;
+  state.totalColleges = colleges.length;
+  state.totalMajors = colleges.reduce((s,c)=>s+(c.major_count||0),0);
+  state.totalCourses = colleges.reduce((s,c)=>s+(c.course_count||0),0);
   const grid = document.getElementById('cg');
   if(grid) grid.innerHTML = colleges.map((c,i)=>`
     <div class="college-card" onclick="goMajors(${c.id})">
@@ -328,6 +331,13 @@ async function loadHome(){
         <div class="c-arrow"><i class="fa-solid fa-arrow-right"></i></div>
       </div>
     </div>`).join('');
+  const heroStats = document.getElementById('hero-stats');
+  if(heroStats) heroStats.innerHTML = `
+    <div class="hero-stat"><div class="num">${state.totalColleges}</div><div class="label">产业学院</div></div>
+    <div class="hero-stat"><div class="num">${state.totalMajors}</div><div class="label">专业方向</div></div>
+    <div class="hero-stat"><div class="num">${state.totalCourses}</div><div class="label">精品课程</div></div>`;
+  const heroDesc = document.querySelector('.hero-desc');
+  if(heroDesc) heroDesc.textContent = `覆盖${state.totalColleges}大产业学院，精选${state.totalCourses}门专业课程，线上线下同步开放，助力学生高效学习与教师教学。`;
 }
 
 async function loadColleges(){

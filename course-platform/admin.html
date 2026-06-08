@@ -472,26 +472,134 @@ async function deleteCollege(id, name){
 
 // ===== MAJOR CRUD =====
 
+let tempNewCourses = [];
+let tempNewCollegeId = 0;
+
 function openAddMajor(){
-  openModal(`<div class="modal"><div class="modal-header"><h2><i class="fa-solid fa-list-check"></i> 新增专业</h2><button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
+  tempNewCourses = [];
+  tempNewCollegeId = 0;
+  openModal(`<div class="modal" style="max-width:700px"><div class="modal-header"><h2><i class="fa-solid fa-list-check"></i> 新增专业</h2><button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
   <div class="modal-body">
     <label>所属学院 <span style="color:var(--danger)">*</span></label>
-    <select id="m-college">
+    <select id="m-college" onchange="tempNewCollegeId=parseInt(this.value)">
       ${state.colleges.map(c=>`<option value="${c.id}">${escHtml(c.name)}</option>`).join('')}
     </select>
     <label>专业方向名称 <span style="color:var(--danger)">*</span></label>
     <input id="m-name" placeholder="例如：软件技术">
+
+    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <label style="margin:0">该专业的课程 (<b id="new-course-count">0</b>个)</label>
+        <button type="button" class="btn btn-primary btn-sm" onclick="openAddCourseForNewMajor()"><i class="fa-solid fa-plus"></i> 添加课程</button>
+      </div>
+      <div id="new-course-list" style="max-height:250px;overflow-y:auto">
+        <div style="text-align:center;color:var(--text-muted);padding:20px">暂无课程，点击上方按钮添加</div>
+      </div>
+    </div>
   </div>
   <div class="modal-footer">
     <button class="modal-cancel" onclick="closeModal()">取消</button>
-    <button class="modal-save" onclick="submitAddMajor()"><i class="fa-solid fa-check"></i> 保存</button>
+    <button class="modal-save" onclick="submitAddMajor()"><i class="fa-solid fa-check"></i> 保存专业</button>
+  </div></div>`);
+  tempNewCollegeId = parseInt(document.getElementById('m-college').value);
+}
+
+function openAddCourseForNewMajor(){
+  const collegeId = tempNewCollegeId || parseInt(document.getElementById('m-college').value);
+  const collegeName = state.colleges.find(c=>c.id===collegeId)?.name || '';
+  openModal(`<div class="modal"><div class="modal-header"><h2><i class="fa-solid fa-video"></i> 添加课程</h2><button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="modal-body">
+    <label>所属学院</label>
+    <select disabled style="background:#f1f5f9"><option>${escHtml(collegeName)}</option></select>
+    <label>课程名称 <span style="color:var(--danger)">*</span></label>
+    <input id="nc-name" placeholder="例如：Java基础">
+    <label>课程图片</label>
+    <input id="nc-img" placeholder="图片URL">
+    <label>课程简介</label>
+    <textarea id="nc-desc" placeholder="简要描述课程内容..."></textarea>
+    <label>线上课程地址</label>
+    <input id="nc-online" placeholder="https://...">
+    <label>线下课程地址</label>
+    <input id="nc-offline" placeholder="https://...">
+  </div>
+  <div class="modal-footer">
+    <button class="modal-cancel" onclick="closeModal()">取消</button>
+    <button class="modal-save" onclick="submitAddCourseForNewMajor()"><i class="fa-solid fa-check"></i> 保存课程</button>
   </div></div>`);
 }
+
+function submitAddCourseForNewMajor(){
+  const name = document.getElementById('nc-name').value.trim();
+  if(!name){ toast('请输入课程名称', 'error'); return; }
+  const courseData = {
+    name,
+    image_url: document.getElementById('nc-img').value.trim(),
+    description: document.getElementById('nc-desc').value.trim(),
+    online_url: document.getElementById('nc-online').value.trim(),
+    offline_url: document.getElementById('nc-offline').value.trim()
+  };
+  tempNewCourses.push(courseData);
+  closeModal();
+  renderNewCourseList();
+}
+
+function renderNewCourseList(){
+  const list = document.getElementById('new-course-list');
+  const count = document.getElementById('new-course-count');
+  if(!list) return;
+  count.textContent = tempNewCourses.length;
+  if(tempNewCourses.length === 0){
+    list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">暂无课程，点击上方按钮添加</div>';
+    return;
+  }
+  list.innerHTML = tempNewCourses.map((c,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:8px;margin-bottom:8px">
+      <div>
+        <div style="font-weight:600">${escHtml(c.name)}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${escHtml(c.description||'')}</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-danger-outline btn-sm" onclick="removeTempCourse(${i})"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function removeTempCourse(index){
+  tempNewCourses.splice(index, 1);
+  renderNewCourseList();
+}
+
 async function submitAddMajor(){
   const name = document.getElementById('m-name').value.trim();
   const college_id = parseInt(document.getElementById('m-college').value);
   if(!name){ toast('请输入专业名称', 'error'); return; }
-  try { await api('/admin/majors', 'POST', {name, college_id}); toast('专业添加成功'); closeModal(); await loadData(); }
+  try {
+    await api('/admin/majors', 'POST', {name, college_id});
+    // 获取新专业ID
+    const majors = await api('/admin/majors');
+    const newMajor = majors.find(m=>m.name===name && m.college_id===college_id);
+    if(!newMajor){
+      toast('专业添加成功', 'success');
+      closeModal();
+      await loadData();
+      return;
+    }
+    // 添加课程
+    for(const c of tempNewCourses){
+      await api('/admin/courses', 'POST', {
+        name: c.name,
+        college_id,
+        major_id: newMajor.id,
+        image_url: c.image_url,
+        description: c.description,
+        online_url: c.online_url,
+        offline_url: c.offline_url
+      });
+    }
+    toast('专业添加成功', 'success');
+    closeModal();
+    await loadData();
+  }
   catch(e){ toast(e.message, 'error'); }
 }
 
