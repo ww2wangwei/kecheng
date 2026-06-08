@@ -439,15 +439,16 @@ async function goMajors(id){
 }
 
 async function goCourses(collegeId,majorId,majorName){
-  state.v='courses';
-  state.collegeId=collegeId; state.majorId=majorId;
-  state.major={name:decodeURIComponent(majorName),course_count:0};
-  render();
   const all=await api('/courses');
   const targetCollege=state.colleges.find(c=>c.id==collegeId)?.name;
   const targetMajor=decodeURIComponent(majorName);
   const filtered=all.filter(c=>c.college_name===targetCollege&&c.major_name===targetMajor);
-  state.major.course_count=filtered.length;
+
+  state.v='courses';
+  state.collegeId=collegeId; state.majorId=majorId;
+  state.major={name:decodeURIComponent(majorName),course_count:filtered.length};
+  render();
+
   const list=document.getElementById('cl');
   if(list){
     if(!filtered.length){
@@ -469,34 +470,46 @@ async function goCourses(collegeId,majorId,majorName){
 async function openCourse(id){
   const all=await api('/courses');
   const c=all.find(x=>x.id==id); if(!c) return;
-  const modal=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>${e(c.name)}</h2>
-        <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+  const existing=document.getElementById('modal-overlay');
+  if(existing) existing.remove();
+
+  const modal=document.createElement('div');
+  modal.className='modal-overlay';
+  modal.id='modal-overlay';
+  modal.onclick=function(ev){ if(ev.target===modal) modal.remove(); };
+
+  const imgHtml=c.image_url
+    ? `<img src="${e(c.image_url)}" alt="${e(c.name)}">`
+    : `<i class="fa-solid fa-book placeholder"></i>`;
+
+  const linksHtml=[];
+  if(c.online_url) linksHtml.push(`<a class="link-btn online" href="${e(c.online_url)}" target="_blank"><i class="fa-solid fa-globe"></i> 访问线上课程</a>`);
+  if(c.offline_url) linksHtml.push(`<a class="link-btn offline" href="${e(c.offline_url)}" target="_blank"><i class="fa-solid fa-school"></i> 访问线下课程</a>`);
+  if(!c.online_url && !c.offline_url) linksHtml.push(`<p style="color:var(--slate);text-align:center;font-size:14px">暂无课程地址</p>`);
+
+  modal.innerHTML=`<div class="modal">
+    <div class="modal-header">
+      <h2>${e(c.name)}</h2>
+      <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="c-img">${imgHtml}</div>
+      <div class="c-tags">
+        <span class="c-tag blue"><i class="fa-solid fa-building-columns"></i> ${e(c.college_name||'')}</span>
+        <span class="c-tag"><i class="fa-solid fa-list-check"></i> ${e(c.major_name||'')}</span>
       </div>
-      <div class="modal-body">
-        <div class="c-img">
-          ${c.image_url ? `<img src="${e(c.image_url)}" alt="${e(c.name)}">` : `<i class="fa-solid fa-book placeholder"></i>`}
-        </div>
-        <div class="c-tags">
-          <span class="c-tag blue"><i class="fa-solid fa-building-columns"></i> ${e(c.college_name||'')}</span>
-          <span class="c-tag"><i class="fa-solid fa-list-check"></i> ${e(c.major_name||'')}</span>
-        </div>
-        ${c.description ? `<div class="c-desc">${e(c.description)}</div>` : ''}
-        <div class="links">
-          ${c.online_url ? `<a class="link-btn online" href="${e(c.online_url)}" target="_blank"><i class="fa-solid fa-globe"></i> 访问线上课程</a>` : ''}
-          ${c.offline_url ? `<a class="link-btn offline" href="${e(c.offline_url)}" target="_blank"><i class="fa-solid fa-school"></i> 访问线下课程</a>` : ''}
-          ${!c.online_url && !c.offline_url ? '<p style="color:var(--slate);text-align:center;font-size:14px">暂无课程地址</p>' : ''}
-        </div>
-      </div>
+      ${c.description ? `<div class="c-desc">${e(c.description)}</div>` : ''}
+      <div class="links">${linksHtml.join('')}</div>
     </div>
   </div>`;
-  const old=document.getElementById('modal-overlay'); if(old) old.remove();
-  document.body.insertAdjacentHTML('beforeend',modal);
+
+  modal.querySelector('.modal-close').onclick=function(){ modal.remove(); };
+  document.body.appendChild(modal);
 }
 
-function closeModal(){ const m=document.getElementById('modal-overlay'); if(m) m.remove(); }
+function closeModal(){
+  const m=document.getElementById('modal-overlay'); if(m) m.remove();
+}
 
 function onSearch(q){ if(!q.trim()) nav('home'); }
 function goBackToMajors(){
