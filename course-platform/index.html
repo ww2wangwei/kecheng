@@ -521,18 +521,34 @@ function goBackToMajors(){
 
 async function doSearch(q){
   if(!q.trim()){ nav('home'); return; }
+  const ql=q.toLowerCase();
+  const colleges=await api('/colleges');
+  const allCourses=await api('/courses');
+
+  // 搜索匹配的学院
+  const matchedColleges=colleges.filter(c=>c.name.toLowerCase().includes(ql));
+  // 搜索匹配的课程
+  const matchedCourses=allCourses.filter(c=>c.name.toLowerCase().includes(ql));
+
+  // 如果匹配了学院，显示学院列表
+  if(matchedColleges.length>0 && matchedCourses.length===0){
+    state.v='colleges';
+    state.colleges=matchedColleges;
+    state.totalColleges=matchedColleges.length;
+    state.totalMajors=matchedColleges.reduce((s,c)=>s+(c.major_count||0),0);
+    render();
+    return;
+  }
+
   state.v='courses';
-  state.major={name:'搜索结果',course_count:0};
+  state.major={name:'搜索结果',course_count:matchedCourses.length};
   render();
-  const all=await api('/courses');
-  const filtered=all.filter(c=>c.name.toLowerCase().includes(q.toLowerCase()));
-  state.major.course_count=filtered.length;
   const list=document.getElementById('cl');
   if(list){
-    if(!filtered.length){
+    if(!matchedCourses.length){
       list.innerHTML='<div class="empty-state"><i class="fa-solid fa-search"></i><p>未找到相关课程</p></div>'; return;
     }
-    list.innerHTML=filtered.map((c,i)=>`
+    list.innerHTML=matchedCourses.map((c,i)=>`
       <div class="course-item reveal" onclick="openCourse(${c.id})">
         <div class="c-num">${i+1}</div>
         <div class="c-info">
