@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>产业学院课程资源平台</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -179,6 +180,22 @@ button{border:none;cursor:pointer;font-family:inherit;background:none}
 
 /* FOOTER */
 .site-footer{background:var(--midnight);padding:48px 48px 32px;margin-top:80px;position:relative}
+
+/* KNOWLEDGE GRAPH */
+.graph-container{width:100%;height:600px;background:var(--midnight);border-radius:var(--r-lg);overflow:hidden;position:relative}
+.graph-container svg{width:100%;height:100%}
+.graph-node-college{cursor:pointer}
+.graph-node-major{cursor:pointer}
+.graph-node-course{cursor:pointer}
+.graph-node-label{font-family:'Noto Sans SC',sans-serif;font-size:11px;fill:#fff;pointer-events:none}
+.graph-link{stroke:rgba(212,168,83,.3);stroke-width:1.5}
+.graph-legend{position:absolute;bottom:20px;left:20px;display:flex;gap:20px;background:rgba(15,23,42,.8);padding:12px 20px;border-radius:var(--r);backdrop-filter:blur(8px)}
+.graph-legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#fff}
+.graph-legend-dot{width:12px;height:12px;border-radius:50%}
+.graph-legend-dot.college{background:#d4a853}
+.graph-legend-dot.major{background:#3b82f6}
+.graph-legend-dot.course{background:#10b981}
+.graph-tooltip{position:absolute;background:rgba(15,23,42,.95);color:#fff;padding:10px 14px;border-radius:var(--r);font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s;border:1px solid rgba(212,168,83,.3)}
 .site-footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px}
 .footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:20px}
@@ -204,6 +221,7 @@ button{border:none;cursor:pointer;font-family:inherit;background:none}
   <nav class="header-nav">
     <a href="#" id="nav-home" class="active">首页</a>
     <a href="#" id="nav-colleges">产业学院</a>
+    <a href="#" id="nav-graph">知识图谱</a>
   </nav>
   <div class="header-extra">
     <a href="/admin/" class="btn"><i class="fa-solid fa-gear"></i> 管理后台</a>
@@ -251,11 +269,13 @@ function render(){
   else if(state.v==='colleges') app.innerHTML=tplColleges();
   else if(state.v==='majors') app.innerHTML=tplMajors();
   else if(state.v==='courses') app.innerHTML=tplCourses();
+  else if(state.v==='graph') app.innerHTML=tplGraph();
 }
 
 function nav(v){ state.v=v; render();
   if(v==='home') loadHome();
   else if(v==='colleges') loadColleges();
+  else if(v==='graph') loadGraph();
   document.getElementById('nav-home').className=v==='home'?'active':'';
   document.getElementById('nav-colleges').className=v==='colleges'?'active':'';
 }
@@ -354,6 +374,152 @@ function tplCourses(){
   </div>
   <div class="course-list" id="cl"></div>
 </div>`;
+}
+
+function tplGraph(){
+  return `<div class="page-main fade-in">
+  <div class="list-header">
+    <button class="back-btn" onclick="nav('home')"><i class="fa-solid fa-arrow-left"></i> 返回首页</button>
+    <h2>知识图谱</h2>
+    <button class="btn" onclick="loadGraph()"><i class="fa-solid fa-refresh"></i> 刷新</button>
+  </div>
+  <div class="graph-container" id="graph-container">
+    <svg id="graph-svg"></svg>
+    <div class="graph-legend">
+      <div class="graph-legend-item"><div class="graph-legend-dot college"></div>产业学院</div>
+      <div class="graph-legend-item"><div class="graph-legend-dot major"></div>专业方向</div>
+      <div class="graph-legend-item"><div class="graph-legend-dot course"></div>课程</div>
+    </div>
+  </div>
+</div>`;
+}
+
+async function loadGraph(){
+  const colleges = await api('/colleges');
+  const allCourses = await api('/courses');
+
+  const nodes = [];
+  const links = [];
+  const majorMap = {};
+
+  // 添加学院节点
+  colleges.forEach(c => {
+    nodes.push({id: 'college_'+c.id, name: c.name, type: 'college', count: c.course_count});
+  });
+
+  // 从课程中提取专业信息
+  allCourses.forEach(co => {
+    const majorKey = 'major_'+co.major_id;
+    if(!majorMap[majorKey]){
+      majorMap[majorKey] = {id: co.major_id, name: co.major_name, college_id: co.college_id};
+    }
+  });
+
+  // 添加专业节点
+  Object.values(majorMap).forEach(m => {
+    nodes.push({id: 'major_'+m.id, name: m.name, type: 'major'});
+    links.push({source: 'college_'+m.college_id, target: 'major_'+m.id});
+  });
+
+  // 添加课程节点
+  allCourses.forEach(co => {
+    nodes.push({id: 'course_'+co.id, name: co.name, type: 'course'});
+    links.push({source: 'major_'+co.major_id, target: 'course_'+co.id});
+  });
+
+  renderGraph(nodes, links);
+}
+
+function renderGraph(nodes, links){
+  const container = document.getElementById('graph-container');
+  if(!container) return;
+
+  const width = container.clientWidth;
+  const height = 600;
+
+  d3.select('#graph-svg').selectAll('*').remove();
+
+  const svg = d3.select('#graph-svg')
+    .attr('width', width)
+    .attr('height', height);
+
+  // 添加缩放功能
+  const g = svg.append('g');
+  svg.call(d3.zoom()
+    .scaleExtent([0.3, 3])
+    .on('zoom', (event) => {
+      g.attr('transform', event.transform);
+    }));
+
+  const simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(80))
+    .force('charge', d3.forceManyBody().strength(-200))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(30));
+
+  const link = g.append('g')
+    .selectAll('line')
+    .data(links)
+    .join('line')
+    .attr('class', 'graph-link');
+
+  const node = g.append('g')
+    .selectAll('g')
+    .data(nodes)
+    .join('g')
+    .call(d3.drag()
+      .on('start', (event, d) => {
+        if(!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x; d.fy = d.y;
+      })
+      .on('drag', (event, d) => { d.fx = event.x; d.fy = event.y; })
+      .on('end', (event, d) => {
+        if(!event.active) simulation.alphaTarget(0);
+        d.fx = null; d.fy = null;
+      }));
+
+  const color = d => d.type === 'college' ? '#d4a853' : d.type === 'major' ? '#3b82f6' : '#10b981';
+  const radius = d => d.type === 'college' ? 28 : d.type === 'major' ? 20 : 12;
+
+  node.append('circle')
+    .attr('r', d => radius(d))
+    .attr('fill', d => color(d))
+    .attr('stroke', '#fff')
+    .attr('stroke-width', 2)
+    .style('cursor', 'pointer')
+    .on('click', (event, d) => {
+      event.stopPropagation();
+      if(d.type === 'college'){
+        goMajors(d.id.replace('college_', ''));
+      } else if(d.type === 'course'){
+        openCourse(d.id.replace('course_', ''));
+      } else if(d.type === 'major'){
+        // 高亮相关节点
+        const relatedLinks = links.filter(l => l.source.id === d.id || l.target.id === d.id);
+        const relatedNodes = new Set([d.id, ...relatedLinks.map(l => l.source.id === d.id ? l.target.id : l.source.id)]);
+        node.style('opacity', n => relatedNodes.has(n.id) ? 1 : 0.2);
+        link.style('opacity', l => l.source.id === d.id || l.target.id === d.id ? 1 : 0.1);
+      }
+    })
+    .on('dblclick', (event, d) => {
+      node.style('opacity', 1);
+      link.style('opacity', 1);
+    });
+
+  node.append('text')
+    .attr('class', 'graph-node-label')
+    .attr('text-anchor', 'middle')
+    .attr('dy', d => radius(d) + 14)
+    .text(d => d.name.length > 6 ? d.name.substring(0,6)+'...' : d.name);
+
+  simulation.on('tick', () => {
+    link
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y);
+    node.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
 }
 
 async function loadHome(){
@@ -537,6 +703,20 @@ async function doSearch(q){
     state.totalColleges=matchedColleges.length;
     state.totalMajors=matchedColleges.reduce((s,c)=>s+(c.major_count||0),0);
     render();
+    const grid=document.getElementById('cg');
+    if(grid) grid.innerHTML=matchedColleges.map((c,i)=>`
+      <div class="college-card reveal" onclick="goMajors(${c.id})">
+        <div class="c-top">
+          <div class="college-icon ${ICON_CLS[i%10]}"><i class="${ICONS[i%10]}"></i></div>
+          <div><h3>${e(c.name)}</h3><p class="c-sub">专业方向课程资源</p></div>
+        </div>
+        <div class="c-footer">
+          <span class="c-tag"><strong>${c.major_count}</strong> 个专业</span>
+          <span class="c-tag"><strong>${c.course_count}</strong> 门课程</span>
+          <div class="c-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+        </div>
+      </div>`).join('');
+    initRevealObserver();
     return;
   }
 
@@ -611,6 +791,7 @@ document.addEventListener('mousemove',e=>{
 
 document.getElementById('nav-home').addEventListener('click',ev=>{ev.preventDefault();nav('home')});
 document.getElementById('nav-colleges').addEventListener('click',ev=>{ev.preventDefault();nav('colleges')});
+document.getElementById('nav-graph').addEventListener('click',ev=>{ev.preventDefault();nav('graph')});
 console.log('Script loaded, calling nav(home)');
 nav('home');
 console.log('nav(home) completed');
