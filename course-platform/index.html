@@ -180,22 +180,6 @@ button{border:none;cursor:pointer;font-family:inherit;background:none}
 
 /* FOOTER */
 .site-footer{background:var(--midnight);padding:48px 48px 32px;margin-top:80px;position:relative}
-
-/* KNOWLEDGE GRAPH */
-.graph-container{width:100%;height:600px;background:var(--midnight);border-radius:var(--r-lg);overflow:hidden;position:relative}
-.graph-container svg{width:100%;height:100%}
-.graph-node-college{cursor:pointer}
-.graph-node-major{cursor:pointer}
-.graph-node-course{cursor:pointer}
-.graph-node-label{font-family:'Noto Sans SC',sans-serif;font-size:11px;fill:#fff;pointer-events:none}
-.graph-link{stroke:rgba(212,168,83,.3);stroke-width:1.5}
-.graph-legend{position:absolute;bottom:20px;left:20px;display:flex;gap:20px;background:rgba(15,23,42,.8);padding:12px 20px;border-radius:var(--r);backdrop-filter:blur(8px)}
-.graph-legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#fff}
-.graph-legend-dot{width:12px;height:12px;border-radius:50%}
-.graph-legend-dot.college{background:#d4a853}
-.graph-legend-dot.major{background:#3b82f6}
-.graph-legend-dot.course{background:#10b981}
-.graph-tooltip{position:absolute;background:rgba(15,23,42,.95);color:#fff;padding:10px 14px;border-radius:var(--r);font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s;border:1px solid rgba(212,168,83,.3)}
 .site-footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px}
 .footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:20px}
@@ -208,6 +192,78 @@ button{border:none;cursor:pointer;font-family:inherit;background:none}
 .footer-col a:hover{color:var(--gold)}
 .footer-bottom{max-width:1280px;margin:40px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center}
 .footer-copy{font-size:13px;color:rgba(255,255,255,.35)}
+
+/* ==================== 知识图谱增强样式 ==================== */
+.graph-page{max-width:100%;padding:60px 0 80px}
+.graph-page-header{max-width:1280px;margin:0 auto 32px;padding:0 48px;display:flex;align-items:center;justify-content:space-between}
+.graph-page-header h2{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:var(--midnight)}
+.graph-page-header .sub{font-size:14px;color:var(--slate);margin-top:4px}
+.graph-layout{display:flex;gap:24px;max-width:1280px;margin:0 auto;padding:0 48px}
+
+/* 筛选面板 */
+.filter-panel{width:260px;flex-shrink:0;background:#fff;border-radius:var(--r-lg);border:1px solid rgba(15,23,42,.06);overflow:hidden;height:fit-content;position:sticky;top:96px}
+.filter-section{padding:20px;border-bottom:1px solid rgba(15,23,42,.06)}
+.filter-section:last-child{border-bottom:none}
+.filter-title{font-size:12px;font-weight:600;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.filter-title i{font-size:10px}
+.filter-colleges{displaY:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+.filter-college{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r);cursor:pointer;transition:all .2s;border:1px solid transparent}
+.filter-college:hover{background:rgba(15,23,42,.04)}
+.filter-college.active{background:rgba(15,23,42,.06);border-color:rgba(15,23,42,.1)}
+.filter-checkbox{width:18px;height:18px;border-radius:4px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.filter-college.active .filter-checkbox{background:var(--gold);border-color:var(--gold)}
+.filter-checkbox i{font-size:10px;color:#fff;opacity:0;transition:opacity .2s}
+.filter-college.active .filter-checkbox i{opacity:1}
+.filter-color{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.filter-name{font-size:13px;color:var(--charcoal);flex:1}
+.filter-count{font-size:11px;color:var(--muted);background:rgba(15,23,42,.06);padding:2px 6px;border-radius:10px}
+.filter-actions{display:flex;gap:8px;padding:16px 20px;border-top:1px solid rgba(15,23,42,.06)}
+.filter-btn{flex:1;padding:8px 12px;border-radius:var(--r);font-size:12px;font-weight:600;transition:all .2s}
+.filter-btn.select-all{background:var(--cream);color:var(--midnight);border:1px solid rgba(15,23,42,.1)}
+.filter-btn.select-all:hover{background:var(--midnight);color:#fff}
+.filter-btn.clear{background:var(--cream);color:var(--slate);border:1px solid rgba(15,23,42,.1)}
+.filter-btn.clear:hover{background:#fee2e2;color:#dc2626;border-color:#fecaca}
+
+/* 统计面板 */
+.stats-panel{background:#fff;border-radius:var(--r-lg);border:1px solid rgba(15,23,42,.06);padding:20px;margin-top:16px}
+.stats-title{font-size:12px;font-weight:600;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat-card{text-align:center;padding:12px 8px;border-radius:var(--r);background:var(--cream)}
+.stat-card .num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--midnight)}
+.stat-card .label{font-size:11px;color:var(--slate);margin-top:2px}
+.stats-bar{background:#fff;border-radius:var(--r-lg);border:1px solid rgba(15,23,42,.06);padding:20px;margin-top:16px}
+.stats-bar-title{font-size:12px;font-weight:600;color:var(--midnight);margin-bottom:12px}
+.bar-chart{display:flex;flex-direction:column;gap:8px}
+.bar-item{display:flex;align-items:center;gap:8px}
+.bar-label{font-size:11px;color:var(--slate);width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:8px;background:var(--cream);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.bar-value{font-size:11px;color:var(--muted);width:36px;text-align:right}
+
+/* 图谱容器 */
+.graph-container{flex:1;min-width:0;background:var(--midnight);border-radius:var(--r-lg);overflow:hidden;position:relative;height:calc(100vh - 200px);min-height:500px}
+.graph-container svg{width:100%;height:100%}
+.graph-controls{position:absolute;top:16px;right:16px;display:flex;flex-direction:column;gap:8px}
+.graph-control-btn{width:40px;height:40px;background:rgba(255,255,255,.1);border:none;border-radius:var(--r);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(8px)}
+.graph-control-btn:hover{background:rgba(255,255,255,.2)}
+.graph-legend{position:absolute;bottom:16px;left:16px;display:flex;gap:16px;background:rgba(15,23,42,.8);padding:12px 20px;border-radius:var(--r);backdrop-filter:blur(8px)}
+.graph-legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#fff}
+.graph-legend-dot{width:10px;height:10px;border-radius:50%}
+.graph-tooltip{position:absolute;background:rgba(15,23,42,.95);color:#fff;padding:12px 16px;border-radius:var(--r);font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s;border:1px solid rgba(212,168,83,.3);max-width:200px;z-index:100}
+.graph-tooltip .tip-name{font-weight:600;margin-bottom:4px}
+.graph-tooltip .tip-meta{font-size:11px;color:rgba(255,255,255,.6)}
+.graph-node-label{font-family:'Noto Sans SC',sans-serif;font-size:10px;fill:#fff;pointer-events:none;text-anchor:middle}
+.graph-link{stroke-width:1.5;transition:opacity .3s}
+.graph-link.dimmed{opacity:0.05}
+.graph-node-circle{transition:all .3s}
+.graph-node-circle.dimmed{opacity:0.15}
+.graph-node-circle.highlighted{stroke:#fff;stroke-width:3px;filter:drop-shadow(0 0 8px currentColor)}
+
+/* 关键词搜索 */
+.keyword-search{padding:20px;border-bottom:1px solid rgba(15,23,42,.06)}
+.keyword-input{width:100%;padding:10px 14px;border:1.5px solid rgba(15,23,42,.1);border-radius:var(--r);font-size:13px;outline:none;transition:border-color .2s}
+.keyword-input:focus{border-color:var(--gold)}
+.keyword-input::placeholder{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -254,16 +310,42 @@ button{border:none;cursor:pointer;font-family:inherit;background:none}
 </div>
 </footer>
 <script>
+// 学院配色方案
+const COLLEGE_COLORS = [
+  '#1a73e8', // 数字技术 - 蓝色
+  '#8b5cf6', // 人工智能 - 紫色
+  '#10b981', // 网络安全 - 绿色
+  '#f59e0b', // 数字经济 - 橙色
+  '#06b6d4', // 低空经济 - 青色
+  '#ef4444', // 智能制造 - 红色
+  '#eab308', // 智慧能源 - 黄色
+  '#ec4899', // 智慧文旅 - 粉色
+  '#14b8a6', // 智慧康养 - 青绿色
+];
+
 const API = '/api';
 const ICONS = ['fa-solid fa-laptop','fa-solid fa-robot','fa-solid fa-shield','fa-solid fa-chart-line','fa-solid fa-plane','fa-solid fa-gears','fa-solid fa-bolt','fa-solid fa-masks-theater','fa-solid fa-heart','fa-solid fa-briefcase'];
 const ICON_CLS = ['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10'];
 let state = { v:'home', colleges:[], college:null, major:null, majorId:null, collegeId:null, totalColleges:0, totalMajors:0, totalCourses:0 };
+// 图谱状态
+let graphState = {
+  nodes: [],
+  links: [],
+  allNodes: [],
+  allLinks: [],
+  selectedColleges: new Set(),
+  keyword: '',
+  simulation: null,
+  svg: null,
+  g: null,
+  nodeElements: null,
+  linkElements: null
+};
 
 function e(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 async function api(url){ const r=await fetch(API+url); if(!r.ok) throw new Error(r.statusText); return r.json(); }
 
 function render(){
-  console.log('render called, state.v:', state.v);
   const app = document.getElementById('app');
   if(state.v==='home') app.innerHTML=tplHome();
   else if(state.v==='colleges') app.innerHTML=tplColleges();
@@ -281,7 +363,6 @@ function nav(v){ state.v=v; render();
 }
 
 function tplHome(){
-  console.log('tplHome called');
   return `<section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
@@ -293,15 +374,15 @@ function tplHome(){
       <p class="hero-desc">覆盖全国优质产业学院，整合多元化专业课程资源，线上线下融合，助力学生高效学习与教师创新教学。</p>
       <div class="hero-stats">
         <div class="hero-stat">
-          <div class="num">${state.totalColleges||0}</div>
+          <div class="num" id="stat-colleges">${state.totalColleges||0}</div>
           <div class="label">产业学院</div>
         </div>
         <div class="hero-stat">
-          <div class="num">${state.totalMajors||0}</div>
+          <div class="num" id="stat-majors">${state.totalMajors||0}</div>
           <div class="label">专业方向</div>
         </div>
         <div class="hero-stat">
-          <div class="num">${state.totalCourses||0}</div>
+          <div class="num" id="stat-courses">${state.totalCourses||0}</div>
           <div class="label">精品课程</div>
         </div>
       </div>
@@ -376,97 +457,331 @@ function tplCourses(){
 </div>`;
 }
 
+// 知识图谱页面
 function tplGraph(){
-  return `<div class="page-main fade-in">
-  <div class="list-header">
-    <button class="back-btn" onclick="nav('home')"><i class="fa-solid fa-arrow-left"></i> 返回首页</button>
-    <h2>知识图谱</h2>
+  return `<div class="graph-page fade-in">
+  <div class="graph-page-header">
+    <div>
+      <button class="back-btn" onclick="nav('home')"><i class="fa-solid fa-arrow-left"></i> 返回首页</button>
+      <h2 style="margin-top:16px">知识图谱</h2>
+      <p class="sub">探索学院、专业与课程的关系网络</p>
+    </div>
     <button class="btn" onclick="loadGraph()"><i class="fa-solid fa-refresh"></i> 刷新</button>
   </div>
-  <div class="graph-container" id="graph-container">
-    <svg id="graph-svg"></svg>
-    <div class="graph-legend">
-      <div class="graph-legend-item"><div class="graph-legend-dot college"></div>产业学院</div>
-      <div class="graph-legend-item"><div class="graph-legend-dot major"></div>专业方向</div>
-      <div class="graph-legend-item"><div class="graph-legend-dot course"></div>课程</div>
+  <div class="graph-layout">
+    <!-- 筛选面板 -->
+    <div class="filter-panel" id="filter-panel">
+      <div class="filter-section">
+        <div class="filter-title"><i class="fa-solid fa-filter"></i> 学院筛选</div>
+        <div class="filter-colleges" id="filter-colleges"></div>
+      </div>
+      <div class="filter-section keyword-search">
+        <div class="filter-title"><i class="fa-solid fa-search"></i> 关键词搜索</div>
+        <input type="text" class="keyword-input" id="keyword-input" placeholder="输入课程名称..." oninput="onGraphKeyword(this.value)">
+      </div>
+      <div class="filter-actions">
+        <button class="filter-btn select-all" onclick="selectAllColleges()">全选</button>
+        <button class="filter-btn clear" onclick="clearFilters()">清除</button>
+      </div>
+    </div>
+
+    <!-- 图谱容器 -->
+    <div class="graph-container" id="graph-container">
+      <svg id="graph-svg"></svg>
+      <div class="graph-controls">
+        <button class="graph-control-btn" onclick="zoomIn()" title="放大"><i class="fa-solid fa-plus"></i></button>
+        <button class="graph-control-btn" onclick="zoomOut()" title="缩小"><i class="fa-solid fa-minus"></i></button>
+        <button class="graph-control-btn" onclick="resetZoom()" title="重置"><i class="fa-solid fa-arrows-to-dot"></i></button>
+      </div>
+      <div class="graph-legend" id="graph-legend"></div>
+      <div class="graph-tooltip" id="graph-tooltip">
+        <div class="tip-name"></div>
+        <div class="tip-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 统计面板 -->
+  <div style="max-width:1280px;margin:24px auto 0;padding:0 48px">
+    <div class="stats-panel">
+      <div class="stats-title"><i class="fa-solid fa-chart-simple"></i> 数据概览</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="num" id="total-colleges">0</div>
+          <div class="label">产业学院</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="total-majors">0</div>
+          <div class="label">专业方向</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="total-courses">0</div>
+          <div class="label">课程总数</div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stats-bar-title">学院课程分布</div>
+      <div class="bar-chart" id="bar-chart"></div>
     </div>
   </div>
 </div>`;
 }
 
+// 加载知识图谱
 async function loadGraph(){
   const colleges = await api('/colleges');
   const allCourses = await api('/courses');
 
+  // 保存学院数据用于筛选
+  state.colleges = colleges;
+
+  // 初始化选中所有学院
+  graphState.selectedColleges = new Set(colleges.map(c => c.id));
+
+  // 构建节点和链接
   const nodes = [];
   const links = [];
   const majorMap = {};
 
   // 添加学院节点
-  colleges.forEach(c => {
-    nodes.push({id: 'college_'+c.id, name: c.name, type: 'college', count: c.course_count});
+  colleges.forEach((c, i) => {
+    nodes.push({
+      id: 'college_'+c.id,
+      name: c.name,
+      type: 'college',
+      count: c.course_count,
+      collegeId: c.id,
+      color: COLLEGE_COLORS[i % COLLEGE_COLORS.length]
+    });
   });
 
   // 从课程中提取专业信息
   allCourses.forEach(co => {
     const majorKey = 'major_'+co.major_id;
     if(!majorMap[majorKey]){
-      majorMap[majorKey] = {id: co.major_id, name: co.major_name, college_id: co.college_id};
+      const collegeIndex = colleges.findIndex(c => c.id === co.college_id);
+      majorMap[majorKey] = {
+        id: co.major_id,
+        name: co.major_name,
+        college_id: co.college_id,
+        collegeIndex: collegeIndex
+      };
     }
   });
 
   // 添加专业节点
   Object.values(majorMap).forEach(m => {
-    nodes.push({id: 'major_'+m.id, name: m.name, type: 'major'});
+    nodes.push({
+      id: 'major_'+m.id,
+      name: m.name,
+      type: 'major',
+      collegeId: m.college_id,
+      collegeIndex: m.collegeIndex,
+      color: COLLEGE_COLORS[m.collegeIndex % COLLEGE_COLORS.length]
+    });
     links.push({source: 'college_'+m.college_id, target: 'major_'+m.id});
   });
 
   // 添加课程节点
   allCourses.forEach(co => {
-    nodes.push({id: 'course_'+co.id, name: co.name, type: 'course'});
+    const collegeIndex = colleges.findIndex(c => c.id === co.college_id);
+    nodes.push({
+      id: 'course_'+co.id,
+      name: co.name,
+      type: 'course',
+      majorId: co.major_id,
+      collegeId: co.college_id,
+      collegeIndex: collegeIndex,
+      collegeName: co.college_name,
+      majorName: co.major_name,
+      color: COLLEGE_COLORS[collegeIndex % COLLEGE_COLORS.length]
+    });
     links.push({source: 'major_'+co.major_id, target: 'course_'+co.id});
   });
 
-  renderGraph(nodes, links);
+  graphState.allNodes = nodes;
+  graphState.allLinks = links;
+
+  // 更新统计
+  updateGraphStats(colleges, majorMap, allCourses);
+
+  // 渲染筛选面板
+  renderFilterPanel(colleges);
+
+  // 渲染图谱
+  renderGraph();
 }
 
-function renderGraph(nodes, links){
+// 更新统计面板
+function updateGraphStats(colleges, majors, courses){
+  const uniqueCourses = new Set(courses.map(c => c.name));
+
+  document.getElementById('total-colleges').textContent = colleges.length;
+  document.getElementById('total-majors').textContent = Object.keys(majors).length;
+  document.getElementById('total-courses').textContent = uniqueCourses.size;
+
+  // 渲染柱状图
+  const barChart = document.getElementById('bar-chart');
+  const maxCount = Math.max(...colleges.map(c => c.course_count));
+
+  barChart.innerHTML = colleges.map((c, i) => {
+    const percent = (c.course_count / maxCount) * 100;
+    return `<div class="bar-item">
+      <div class="bar-label" title="${c.name}">${c.name.replace('产业学院','')}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${percent}%;background:${COLLEGE_COLORS[i % COLLEGE_COLORS.length]}"></div></div>
+      <div class="bar-value">${c.course_count}</div>
+    </div>`;
+  }).join('');
+}
+
+// 渲染筛选面板
+function renderFilterPanel(colleges){
+  const container = document.getElementById('filter-colleges');
+  if(!container) return;
+
+  container.innerHTML = colleges.map((c, i) => `
+    <div class="filter-college active" data-college-id="${c.id}" onclick="toggleCollegeFilter(${c.id})">
+      <div class="filter-checkbox"><i class="fa-solid fa-check"></i></div>
+      <div class="filter-color" style="background:${COLLEGE_COLORS[i % COLLEGE_COLORS.length]}"></div>
+      <div class="filter-name">${e(c.name.replace('产业学院',''))}</div>
+      <div class="filter-count">${c.course_count}</div>
+    </div>
+  `).join('');
+}
+
+// 切换学院筛选
+function toggleCollegeFilter(collegeId){
+  const el = document.querySelector(`[data-college-id="${collegeId}"]`);
+  if(graphState.selectedColleges.has(collegeId)){
+    graphState.selectedColleges.delete(collegeId);
+    el.classList.remove('active');
+  } else {
+    graphState.selectedColleges.add(collegeId);
+    el.classList.add('active');
+  }
+  applyFilters();
+}
+
+// 全选学院
+function selectAllColleges(){
+  graphState.selectedColleges = new Set(state.colleges.map(c => c.id));
+  document.querySelectorAll('.filter-college').forEach(el => el.classList.add('active'));
+  applyFilters();
+}
+
+// 清除筛选
+function clearFilters(){
+  graphState.selectedColleges.clear();
+  graphState.keyword = '';
+  document.getElementById('keyword-input').value = '';
+  document.querySelectorAll('.filter-college').forEach(el => el.classList.remove('active'));
+  applyFilters();
+}
+
+// 关键词搜索
+function onGraphKeyword(value){
+  graphState.keyword = value.toLowerCase().trim();
+  applyFilters();
+}
+
+// 应用筛选
+function applyFilters(){
+  const selected = graphState.selectedColleges;
+  const keyword = graphState.keyword;
+
+  // 过滤节点
+  graphState.nodes = graphState.allNodes.filter(node => {
+    if(node.type === 'college'){
+      return selected.has(node.collegeId);
+    } else if(node.type === 'major'){
+      return selected.has(node.collegeId);
+    } else {
+      return selected.has(node.collegeId) && (!keyword || node.name.toLowerCase().includes(keyword));
+    }
+  });
+
+  // 过滤链接（只保留两端节点都在的链接）
+  const nodeIds = new Set(graphState.nodes.map(n => n.id));
+  graphState.links = graphState.allLinks.filter(link => {
+    const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+    const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+    return nodeIds.has(sourceId) && nodeIds.has(targetId);
+  });
+
+  // 更新统计
+  const collegeSet = new Set(graphState.nodes.filter(n => n.type === 'college').map(n => n.collegeId));
+  const majorCount = graphState.nodes.filter(n => n.type === 'major').length;
+  const courseCount = graphState.nodes.filter(n => n.type === 'course').length;
+
+  document.getElementById('total-colleges').textContent = collegeSet.size;
+  document.getElementById('total-majors').textContent = majorCount;
+  document.getElementById('total-courses').textContent = courseCount;
+
+  // 重新渲染图谱
+  renderGraph();
+}
+
+// 渲染图谱
+function renderGraph(){
   const container = document.getElementById('graph-container');
   if(!container) return;
 
   const width = container.clientWidth;
-  const height = 600;
+  const height = container.clientHeight || 600;
 
+  // 清除旧图谱
   d3.select('#graph-svg').selectAll('*').remove();
 
   const svg = d3.select('#graph-svg')
     .attr('width', width)
     .attr('height', height);
 
+  graphState.svg = svg;
+
   // 添加缩放功能
   const g = svg.append('g');
+  graphState.g = g;
+
   svg.call(d3.zoom()
-    .scaleExtent([0.3, 3])
+    .scaleExtent([0.2, 4])
     .on('zoom', (event) => {
       g.attr('transform', event.transform);
     }));
 
-  const simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(80))
-    .force('charge', d3.forceManyBody().strength(-200))
-    .force('center', d3.forceCenter(width/2, height/2))
-    .force('collision', d3.forceCollide().radius(30));
+  // 存储初始变换用于重置
+  graphState.initialTransform = d3.zoomIdentity.translate(width/2, height/2).scale(0.8);
+  svg.call(d3.zoom().transform, graphState.initialTransform);
 
+  // 创建力导向模拟
+  const simulation = d3.forceSimulation(graphState.nodes)
+    .force('link', d3.forceLink(graphState.links).id(d => d.id).distance(d => d.source.type === 'college' ? 120 : 60))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'college' ? -500 : d.type === 'major' ? -200 : -100))
+    .force('center', d3.forceCenter(0, 0))
+    .force('collision', d3.forceCollide().radius(d => d.type === 'college' ? 50 : d.type === 'major' ? 30 : 20));
+
+  graphState.simulation = simulation;
+
+  // 渲染链接
   const link = g.append('g')
     .selectAll('line')
-    .data(links)
+    .data(graphState.links)
     .join('line')
-    .attr('class', 'graph-link');
+    .attr('class', 'graph-link')
+    .attr('stroke', d => {
+      const sourceNode = graphState.nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source));
+      return sourceNode ? sourceNode.color : 'rgba(212,168,83,.3)';
+    })
+    .attr('stroke-opacity', 0.4);
 
+  graphState.linkElements = link;
+
+  // 渲染节点组
   const node = g.append('g')
     .selectAll('g')
-    .data(nodes)
+    .data(graphState.nodes)
     .join('g')
+    .attr('class', 'graph-node')
     .call(d3.drag()
       .on('start', (event, d) => {
         if(!event.active) simulation.alphaTarget(0.3).restart();
@@ -478,40 +793,36 @@ function renderGraph(nodes, links){
         d.fx = null; d.fy = null;
       }));
 
-  const color = d => d.type === 'college' ? '#d4a853' : d.type === 'major' ? '#3b82f6' : '#10b981';
-  const radius = d => d.type === 'college' ? 28 : d.type === 'major' ? 20 : 12;
+  graphState.nodeElements = node;
 
+  // 节点大小
+  const radius = d => d.type === 'college' ? 35 : d.type === 'major' ? 22 : 14;
+
+  // 节点圆
   node.append('circle')
+    .attr('class', 'graph-node-circle')
     .attr('r', d => radius(d))
-    .attr('fill', d => color(d))
+    .attr('fill', d => d.color)
     .attr('stroke', '#fff')
-    .attr('stroke-width', 2)
+    .attr('stroke-width', d => d.type === 'college' ? 3 : 2)
     .style('cursor', 'pointer')
     .on('click', (event, d) => {
       event.stopPropagation();
-      if(d.type === 'college'){
-        goMajors(d.id.replace('college_', ''));
-      } else if(d.type === 'course'){
-        openCourse(d.id.replace('course_', ''));
-      } else if(d.type === 'major'){
-        // 高亮相关节点
-        const relatedLinks = links.filter(l => l.source.id === d.id || l.target.id === d.id);
-        const relatedNodes = new Set([d.id, ...relatedLinks.map(l => l.source.id === d.id ? l.target.id : l.source.id)]);
-        node.style('opacity', n => relatedNodes.has(n.id) ? 1 : 0.2);
-        link.style('opacity', l => l.source.id === d.id || l.target.id === d.id ? 1 : 0.1);
-      }
+      handleNodeClick(d);
     })
-    .on('dblclick', (event, d) => {
-      node.style('opacity', 1);
-      link.style('opacity', 1);
-    });
+    .on('mouseenter', (event, d) => showTooltip(event, d))
+    .on('mouseleave', hideTooltip);
 
+  // 节点标签（学院显示名称，专业悬停显示，课程不显示）
   node.append('text')
     .attr('class', 'graph-node-label')
-    .attr('text-anchor', 'middle')
-    .attr('dy', d => radius(d) + 14)
-    .text(d => d.name.length > 6 ? d.name.substring(0,6)+'...' : d.name);
+    .attr('dy', d => radius(d) + 16)
+    .text(d => d.type === 'college' ? d.name.replace('产业学院','') : '')
+    .style('font-size', '11px')
+    .style('font-weight', '600')
+    .style('fill', '#fff');
 
+  // 动画更新
   simulation.on('tick', () => {
     link
       .attr('x1', d => d.source.x)
@@ -520,10 +831,110 @@ function renderGraph(nodes, links){
       .attr('y2', d => d.target.y);
     node.attr('transform', d => `translate(${d.x},${d.y})`);
   });
+
+  // 渲染图例
+  renderGraphLegend();
 }
 
+// 渲染图例
+function renderGraphLegend(){
+  const legend = document.getElementById('graph-legend');
+  if(!legend) return;
+
+  const colleges = state.colleges.slice(0, 5);
+  legend.innerHTML = [
+    { cls: 'college', label: '产业学院' },
+    { cls: 'major', label: '专业方向' },
+    { cls: 'course', label: '课程' }
+  ].map(item => `
+    <div class="graph-legend-item">
+      <div class="graph-legend-dot" style="background:${item.cls === 'college' ? '#d4a853' : item.cls === 'major' ? '#3b82f6' : '#10b981'}"></div>
+      ${item.label}
+    </div>
+  `).join('');
+}
+
+// 显示工具提示
+function showTooltip(event, d){
+  const tooltip = document.getElementById('graph-tooltip');
+  const nameEl = tooltip.querySelector('.tip-name');
+  const metaEl = tooltip.querySelector('.tip-meta');
+
+  nameEl.textContent = d.name;
+
+  if(d.type === 'college'){
+    metaEl.textContent = `${d.count} 门课程`;
+  } else if(d.type === 'major'){
+    metaEl.textContent = d.collegeName || '专业方向';
+  } else {
+    metaEl.textContent = `${d.collegeName || ''} · ${d.majorName || ''}`;
+  }
+
+  const rect = document.getElementById('graph-container').getBoundingClientRect();
+  tooltip.style.left = (event.clientX - rect.left + 10) + 'px';
+  tooltip.style.top = (event.clientY - rect.top - 10) + 'px';
+  tooltip.style.opacity = '1';
+}
+
+// 隐藏工具提示
+function hideTooltip(){
+  document.getElementById('graph-tooltip').style.opacity = '0';
+}
+
+// 处理节点点击
+function handleNodeClick(d){
+  if(d.type === 'college'){
+    goMajors(d.collegeId);
+  } else if(d.type === 'course'){
+    openCourse(d.collegeId, d.name);
+  } else if(d.type === 'major'){
+    // 高亮相关节点
+    const relatedLinks = graphState.links.filter(l =>
+      (typeof l.source === 'object' ? l.source.id : l.source) === d.id ||
+      (typeof l.target === 'object' ? l.target.id : l.target) === d.id
+    );
+    const relatedNodeIds = new Set([d.id]);
+    relatedLinks.forEach(l => {
+      const sourceId = typeof l.source === 'object' ? l.source.id : l.source;
+      const targetId = typeof l.target === 'object' ? l.target.id : l.target;
+      relatedNodeIds.add(sourceId);
+      relatedNodeIds.add(targetId);
+    });
+
+    graphState.nodeElements.selectAll('circle')
+      .classed('dimmed', n => !relatedNodeIds.has(n.id))
+      .classed('highlighted', n => n.id === d.id);
+    graphState.linkElements.classed('dimmed', l => {
+      const sourceId = typeof l.source === 'object' ? l.source.id : l.source;
+      const targetId = typeof l.target === 'object' ? l.target.id : l.target;
+      return sourceId !== d.id && targetId !== d.id;
+    });
+  }
+}
+
+// 缩放控制
+function zoomIn(){
+  graphState.svg.transition().call(d3.zoom().scaleBy, 1.3);
+}
+
+function zoomOut(){
+  graphState.svg.transition().call(d3.zoom().scaleBy, 0.7);
+}
+
+function resetZoom(){
+  graphState.svg.transition().duration(500).call(
+    d3.zoom().transform,
+    graphState.initialTransform
+  );
+  // 重置高亮
+  graphState.nodeElements.selectAll('circle')
+    .classed('dimmed', false)
+    .classed('highlighted', false);
+  graphState.linkElements.classed('dimmed', false);
+}
+
+// 原有函数保持兼容
 async function loadHome(){
-  console.log('loadHome called');
   const colleges = await api('/colleges');
   const allCourses = await api('/courses');
   state.colleges = colleges;
@@ -531,6 +942,15 @@ async function loadHome(){
   state.totalMajors = colleges.reduce((s,c)=>s+(c.major_count||0),0);
   const uniqueCourses = new Set(allCourses.map(c=>c.name));
   state.totalCourses = uniqueCourses.size;
+
+  // 更新首页统计数字
+  const statColleges = document.getElementById('stat-colleges');
+  const statMajors = document.getElementById('stat-majors');
+  const statCourses = document.getElementById('stat-courses');
+  if(statColleges) statColleges.textContent = state.totalColleges;
+  if(statMajors) statMajors.textContent = state.totalMajors;
+  if(statCourses) statCourses.textContent = state.totalCourses;
+
   const grid = document.getElementById('cg');
   if(grid) grid.innerHTML = colleges.slice(0,6).map((c,i)=>`
     <div class="college-card reveal" onclick="goMajors(${c.id})">
@@ -547,7 +967,6 @@ async function loadHome(){
         <div class="c-arrow"><i class="fa-solid fa-arrow-right"></i></div>
       </div>
     </div>`).join('');
-  animateCounters();
   initRevealObserver();
 }
 
@@ -575,21 +994,16 @@ async function loadColleges(){
 
 async function loadMajors(){
   if(!state.collegeId) return;
-  console.log('loadMajors called, collegeId:', state.collegeId);
   const majors=await api('/majors?college_id='+state.collegeId);
-  console.log('majors fetched:', majors.length, majors);
   state.majorList=majors;
   const grid=document.getElementById('mg');
-  console.log('grid element:', grid);
   if(grid) {
-    const html=majors.map((m,i)=>`
+    grid.innerHTML=majors.map((m,i)=>`
     <div class="major-card reveal" onclick="goCourses(${state.collegeId},${m.id},'${encodeURIComponent(m.name)}')">
       <div class="m-icon"><i class="fa-solid fa-book-open"></i></div>
       <div class="m-info"><h4>${e(m.name)}</h4><div class="m-count">${m.course_count} 门课程</div></div>
       <div class="m-arrow"><i class="fa-solid fa-arrow-right"></i></div>
     </div>`).join('');
-    console.log('setting grid innerHTML, length:', html.length);
-    grid.innerHTML=html;
   }
   initRevealObserver();
 }
@@ -599,7 +1013,6 @@ async function goMajors(id){
   state.collegeId=id;
   state.college=state.colleges.find(c=>c.id==id)||{name:'',major_count:0,course_count:0};
   state.majorId=null; state.major=null;
-  console.log('goMajors id:', id, 'college:', state.college);
   render();
   await loadMajors();
 }
@@ -633,7 +1046,8 @@ async function goCourses(collegeId,majorId,majorName){
   }
 }
 
-async function openCourse(id){
+// 课程详情弹窗
+async function openCourse(id, courseName){
   const all=await api('/courses');
   const c=all.find(x=>x.id==id); if(!c) return;
   const existing=document.getElementById('modal-overlay');
@@ -673,6 +1087,11 @@ async function openCourse(id){
   document.body.appendChild(modal);
 }
 
+// 兼容旧接口
+async function openCourseOld(id){
+  await openCourse(id, null);
+}
+
 function closeModal(){
   const m=document.getElementById('modal-overlay'); if(m) m.remove();
 }
@@ -691,12 +1110,9 @@ async function doSearch(q){
   const colleges=await api('/colleges');
   const allCourses=await api('/courses');
 
-  // 搜索匹配的学院
   const matchedColleges=colleges.filter(c=>c.name.toLowerCase().includes(ql));
-  // 搜索匹配的课程
   const matchedCourses=allCourses.filter(c=>c.name.toLowerCase().includes(ql));
 
-  // 如果匹配了学院，显示学院列表
   if(matchedColleges.length>0 && matchedCourses.length===0){
     state.v='colleges';
     state.colleges=matchedColleges;
@@ -741,20 +1157,6 @@ async function doSearch(q){
   }
 }
 
-function animateCounters(){
-  const stats = document.querySelectorAll('.hero-stat .num');
-  stats.forEach((el, idx)=>{
-    const target = idx===0 ? state.totalColleges : idx===1 ? state.totalMajors : state.totalCourses;
-    let current = 0;
-    const step = Math.ceil(target / 40);
-    const timer = setInterval(()=>{
-      current += step;
-      if(current >= target){ current = target; clearInterval(timer); }
-      el.textContent = current;
-    }, 30);
-  });
-}
-
 let observer = null;
 function initRevealObserver(){
   if(observer) observer.disconnect();
@@ -792,9 +1194,7 @@ document.addEventListener('mousemove',e=>{
 document.getElementById('nav-home').addEventListener('click',ev=>{ev.preventDefault();nav('home')});
 document.getElementById('nav-colleges').addEventListener('click',ev=>{ev.preventDefault();nav('colleges')});
 document.getElementById('nav-graph').addEventListener('click',ev=>{ev.preventDefault();nav('graph')});
-console.log('Script loaded, calling nav(home)');
 nav('home');
-console.log('nav(home) completed');
 </script>
 </body>
 </html>
