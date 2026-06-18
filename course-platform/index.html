@@ -886,7 +886,9 @@ function handleNodeClick(d){
   if(d.type === 'college'){
     goMajors(d.collegeId);
   } else if(d.type === 'course'){
-    openCourse(d.collegeId, d.name);
+    // 从 'course_123' 格式提取实际ID
+    const courseId = parseInt(d.id.replace('course_', ''));
+    openCourse(courseId);
   } else if(d.type === 'major'){
     // 高亮相关节点
     const relatedLinks = graphState.links.filter(l =>
