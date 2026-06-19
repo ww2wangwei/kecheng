@@ -813,14 +813,21 @@ function renderGraph(){
     .on('mouseenter', (event, d) => showTooltip(event, d))
     .on('mouseleave', hideTooltip);
 
-  // 节点标签（学院显示名称，专业悬停显示，课程不显示）
+  // 节点标签（所有节点都显示名称）
   node.append('text')
     .attr('class', 'graph-node-label')
-    .attr('dy', d => radius(d) + 16)
-    .text(d => d.type === 'college' ? d.name.replace('产业学院','') : '')
-    .style('font-size', '11px')
+    .attr('dy', d => d.type === 'college' ? 48 : d.type === 'major' ? 32 : 20)
+    .text(d => {
+      if(d.type === 'college') return d.name.replace('产业学院','');
+      if(d.type === 'major') return d.name.length > 5 ? d.name.substring(0,5) : d.name;
+      if(d.type === 'course') return d.name.length > 6 ? d.name.substring(0,6) : d.name;
+      return '';
+    })
+    .style('font-size', d => d.type === 'college' ? '11px' : d.type === 'major' ? '9px' : '8px')
     .style('font-weight', '600')
-    .style('fill', '#fff');
+    .style('fill', '#fff')
+    .style('text-anchor', 'middle')
+    .style('pointer-events', 'none');
 
   // 动画更新
   simulation.on('tick', () => {
@@ -1049,44 +1056,67 @@ async function goCourses(collegeId,majorId,majorName){
 }
 
 // 课程详情弹窗
-async function openCourse(id, courseName){
+async function openCourse(id){
+  console.log('=== openCourse 开始 ===');
+  console.log('传入的ID:', id, typeof id);
   const all=await api('/courses');
-  const c=all.find(x=>x.id==id); if(!c) return;
-  const existing=document.getElementById('modal-overlay');
-  if(existing) existing.remove();
+  console.log('获取到课程数量:', all.length);
+  const c=all.find(x=>x.id==id);
+  console.log('找到的课程:', c);
+  if(!c){
+    console.error('未找到课程! id:', id);
+    // 尝试用字符串ID查找
+    const c2 = all.find(x=>String(x.id)===String(id));
+    console.log('字符串比较查找:', c2);
+    if(c2){
+      console.log('使用字符串比较找到课程');
+    } else {
+      alert('未找到课程信息(id='+id+')');
+      return;
+    }
+  }
 
+  // 移除现有弹窗
+  const existing=document.getElementById('modal-overlay');
+  if(existing){ existing.remove(); console.log('移除旧弹窗'); }
+
+  // 创建弹窗
   const modal=document.createElement('div');
   modal.className='modal-overlay';
   modal.id='modal-overlay';
+  modal.style.zIndex='1000';
   modal.onclick=function(ev){ if(ev.target===modal) modal.remove(); };
 
-  const imgHtml=c.image_url
-    ? `<img src="${e(c.image_url)}" alt="${e(c.name)}">`
+  // 构建弹窗内容
+  const imgHtml = c.image_url
+    ? `<img src="${e(c.image_url)}" alt="${e(c.name)}" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-book placeholder\\'></i>'">`
     : `<i class="fa-solid fa-book placeholder"></i>`;
 
   const linksHtml=[];
   if(c.online_url) linksHtml.push(`<a class="link-btn online" href="${e(c.online_url)}" target="_blank"><i class="fa-solid fa-globe"></i> 访问线上课程</a>`);
   if(c.offline_url) linksHtml.push(`<a class="link-btn offline" href="${e(c.offline_url)}" target="_blank"><i class="fa-solid fa-school"></i> 访问线下课程</a>`);
-  if(!c.online_url && !c.offline_url) linksHtml.push(`<p style="color:var(--slate);text-align:center;font-size:14px">暂无课程地址</p>`);
+  if(linksHtml.length===0) linksHtml.push(`<p style="color:var(--slate);text-align:center;font-size:14px">暂无课程地址</p>`);
 
-  modal.innerHTML=`<div class="modal">
-    <div class="modal-header">
-      <h2>${e(c.name)}</h2>
-      <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="c-img">${imgHtml}</div>
-      <div class="c-tags">
-        <span class="c-tag blue"><i class="fa-solid fa-building-columns"></i> ${e(c.college_name||'')}</span>
-        <span class="c-tag"><i class="fa-solid fa-list-check"></i> ${e(c.major_name||'')}</span>
+  modal.innerHTML=`
+    <div class="modal" style="max-width:560px">
+      <div class="modal-header">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600">${e(c.name)}</h2>
+        <button class="modal-close" onclick="document.getElementById('modal-overlay').remove()"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      ${c.description ? `<div class="c-desc">${e(c.description)}</div>` : ''}
-      <div class="links">${linksHtml.join('')}</div>
-    </div>
-  </div>`;
+      <div class="modal-body">
+        <div class="c-img">${imgHtml}</div>
+        <div class="c-tags">
+          <span class="c-tag blue"><i class="fa-solid fa-building-columns"></i> ${e(c.college_name||'')}</span>
+          <span class="c-tag"><i class="fa-solid fa-list-check"></i> ${e(c.major_name||'')}</span>
+        </div>
+        ${c.description ? `<div class="c-desc">${e(c.description)}</div>` : '<div class="c-desc">暂无课程简介</div>'}
+        <div class="links">${linksHtml.join('')}</div>
+      </div>
+    </div>`;
 
-  modal.querySelector('.modal-close').onclick=function(){ modal.remove(); };
   document.body.appendChild(modal);
+  console.log('弹窗已添加到body');
+  console.log('=== openCourse 结束 ===');
 }
 
 // 兼容旧接口
